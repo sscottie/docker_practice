@@ -1,31 +1,31 @@
 version: '3.8'
 
 services:
-  api:
+  main:
     build:
-      context: ../docker_practice
+      context: .
       dockerfile: app/dockerfile
     ports:
-       - 210
+      - 210
     environment:
       - APP_NAME=fallback
-  web:
+  fallback:
     build:
-      context: ../docker_practice
+      context: .
       dockerfile: app/dockerfile
     ports:
       - 80
     environment:
       - APP_NAME=fallback
-  lbapi:
+  lbmain:
     image: dockercloud/haproxy
     links:
-       – api
+      - main
     ports:
-       – "8080:210"
-  lbweb:
+      - 8080:210
+  lbfallback:
     image: dockercloud/haproxy
     links:
-       – web
+      - fallback
     ports:
-       – "80:80"
+      - 80:80
