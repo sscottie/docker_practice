@@ -3,29 +3,31 @@ version: '3.8'
 services:
   main:
     build:
-      context: .
-      dockerfile: app/dockerfile
+      context: app
+      dockerfile: Dockerfile
     ports:
       - 210
     environment:
       - APP_NAME=fallback
   fallback:
     build:
-      context: .
-      dockerfile: app/dockerfile
+      context: app
+      dockerfile: Dockerfile
     ports:
       - 80
     environment:
       - APP_NAME=fallback
-  lbmain:
+  haproxy:
     image: dockercloud/haproxy
+    restart: always
+    depends_on:
+      main:
+        condition: service_healthy
+      fallback:
+        condition: service_healthy
     links:
       - main
-    ports:
-      - 8080:210
-  lbfallback:
-    image: dockercloud/haproxy
-    links:
       - fallback
     ports:
-      - 80:80
+      - 8080:210
+      - 80
