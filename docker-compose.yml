@@ -19,6 +19,9 @@ services:
       - 80
   haproxy:
     image: dockercloud/haproxy
+    build:
+      context: ./
+      dockerfile: Dockerfile
     restart: always
     links:
       - main
@@ -26,8 +29,8 @@ services:
     ports:
       - 80:80
       - 210:210
-    environment:
-      - BALANCE=roundrobin
+#    environment:
+#      - BALANCE=roundrobin
 #      - DOCKER_TLS_VERIFY
 #      - DOCKER_HOST
 #      - DOCKER_CERT_PATH
