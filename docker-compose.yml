@@ -5,29 +5,35 @@ services:
     build:
       context: app
       dockerfile: Dockerfile
+    environment:
+      - APP_NAME=main
     ports:
       - 210
-    environment:
-      - APP_NAME=fallback
   fallback:
     build:
       context: app
       dockerfile: Dockerfile
-    ports:
-      - 80
     environment:
       - APP_NAME=fallback
+    ports:
+      - 80
   haproxy:
     image: dockercloud/haproxy
     restart: always
-    depends_on:
-      main:
-        condition: service_healthy
-      fallback:
-        condition: service_healthy
     links:
       - main
       - fallback
     ports:
-      - 8080:210
-      - 80
+      - 80:80
+      - 210:210
+    environment:
+      - BALANCE=roundrobin
+#      - DOCKER_TLS_VERIFY
+#      - DOCKER_HOST
+#      - DOCKER_CERT_PATH
+#    volumes:
+#      - $DOCKER_CERT_PATH:$DOCKER_CERT_PATH
+
+networks:
+  default:
+    internal: true
